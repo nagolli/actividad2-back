@@ -1,0 +1,10 @@
+Cada vez que reinicies:
+
+Abrir Docker Desktop
+Abrir Ubuntu escribiendo en cmd: wsl
+
+cd /mnt/c/Users/nacho/actividad2
+./vendor/bin/sail up -d
+
+Para apagar:
+./vendor/bin/sail down
