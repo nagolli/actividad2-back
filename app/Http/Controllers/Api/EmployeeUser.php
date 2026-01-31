@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmployeeUser as EmployeeUserModel;
+use App\Models\AppUser as AppUserModel;
 use App\Http\Resources\EmployeeUserResource;
 use App\Http\Resources\EmployeeUserListResource;
 
@@ -60,7 +61,7 @@ class EmployeeUser extends Controller
                     $employee->role()->attach($role['roleId']);
                 }
             }
-            return new EmployeeUserResource($employee->load('appUser.addresses','role'));
+            return new EmployeeUserResource($employee->load('appUser.addresses', 'role'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -74,7 +75,7 @@ class EmployeeUser extends Controller
     public function show(string $id)
     {
         try {
-            $employee = EmployeeUserModel::with('appUser.addresses','role.permission')->findOrFail($id);
+            $employee = EmployeeUserModel::with('appUser.addresses', 'role.permission')->findOrFail($id);
             return new EmployeeUserResource($employee); // usar recurso simple
         } catch (\Exception $e) {
             return response()->json(['error' => 'Employee not found'], 404);
@@ -105,7 +106,10 @@ class EmployeeUser extends Controller
 
             $employee->appUser->update(
                 collect($validated)->only([
-                    'email', 'name', 'surname', 'phone'
+                    'email',
+                    'name',
+                    'surname',
+                    'phone'
                 ])->toArray()
             );
 
@@ -123,7 +127,8 @@ class EmployeeUser extends Controller
 
             $employee->update(
                 collect($validated)->only([
-                    'password', 'isInactive'
+                    'password',
+                    'isInactive'
                 ])->toArray()
             );
 
@@ -132,7 +137,7 @@ class EmployeeUser extends Controller
                     collect($validated['roles'])->pluck('roleId')
                 );
             }
-            return new EmployeeUserResource($employee->load('appUser.addresses','role'));
+            return new EmployeeUserResource($employee->load('appUser.addresses', 'role'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -153,12 +158,11 @@ class EmployeeUser extends Controller
                 ->where('permissionLevel', '>=', 3)
                 ->pluck('permissions.id')
                 ->toArray();
-            
+
             foreach ($criticalPermissions as $permissionId) {
-                $count = EmployeeUserModel::whereHas('role.permission', function ($query) use
-                ($permissionId) {
+                $count = EmployeeUserModel::whereHas('role.permission', function ($query) use ($permissionId) {
                     $query->where('permissions.id', $permissionId)
-                          ->where('permissionLevel', '>=', 3);
+                        ->where('permissionLevel', '>=', 3);
                 })->count();
                 if ($count <= 1) {
                     return response()->json(['error' => 'Cannot delete employee with critical permissions'], 403);
