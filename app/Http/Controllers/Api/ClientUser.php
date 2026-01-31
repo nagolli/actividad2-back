@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ClientUser as ClientUserModel;
+use App\Models\AppUser as AppUserModel;
 use App\Http\Resources\ClientUserResource;
 use App\Http\Resources\ClientUserListResource;
 
@@ -49,10 +51,10 @@ class ClientUser extends Controller
             }
             //Luego inicilaizar el clientUser vinculado al appUser creado
             $client = ClientUserModel::create([
-            'appUserId' => $guest->id,
-            'password' => Hash::make($request->password),
-            'points' => 0,
-            'level' => 1
+                'appUserId' => $guest->id,
+                'password' => Hash::make($request->password),
+                'points' => 0,
+                'level' => 1
             ]);
 
             return new ClientUserResource($client->load('appUser.addresses'));
@@ -98,13 +100,17 @@ class ClientUser extends Controller
 
             $client->appUser->update(
                 collect($validated)->only([
-                    'email', 'name', 'surname', 'phone'
+                    'email',
+                    'name',
+                    'surname',
+                    'phone'
                 ])->toArray()
             );
 
             $client->update(
                 collect($validated)->only([
-                    'points', 'password'
+                    'points',
+                    'password'
                 ])->toArray()
             );
 
