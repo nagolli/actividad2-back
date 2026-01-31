@@ -42,4 +42,4 @@ Route::delete('address/{id}', [Address::class, 'destroy']);
 Route::get('permission', [Permission::class, 'index']);
 Route::get('permission/{id}', [Permission::class, 'show']);
 
-Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+Route::post('login', [App\Http\Controllers\Api\Auth::class, 'login']);

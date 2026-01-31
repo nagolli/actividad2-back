@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class AuthController extends Controller
+class Auth extends Controller
 {
 
     //Funcion login, a partir de un correo y una contraseña, devuelve un json que contiene:
@@ -13,7 +13,7 @@ class AuthController extends Controller
     // B - Si el usuario es un empleado: Array de pares permiso-nivel
     public function login()
     {
-        try{
+        try {
             $credentials = request()->validate([
                 'email' => 'required|email',
                 'password' => 'required|string'
@@ -33,7 +33,7 @@ class AuthController extends Controller
             if ($clientUser && Hash::check($credentials['password'], $clientUser->password)) {
                 $isClient = true;
             }
-            
+
             //Si tenemos appUser, del EmployeeUser asociado ver si coincide la contraseña, en ese caso sí, esta autenticado
             $employeeUser = $appUser->employeeUser;
             if ($employeeUser && Hash::check($credentials['password'], $employeeUser->password)) {
