@@ -29,7 +29,31 @@ class AppUser extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email|unique:appUsers|max:64',
+                'name' => 'required|string|max:64',
+                'surname' => 'required|string|max:128',
+                'phone' => 'required|string|max:32',
+                'addresses' => 'nullable|array',
+                'addresses.*.addressId' => 'required|exists:addresses,id',
+                'addresses.*.name' => 'required|string|max:128'
+            ]);
+
+            $guest = AppUserModel::create($validated);
+
+            if (isset($validated['addresses'])) {
+                foreach ($validated['addresses'] as $address) {
+                    $guest->addresses()->attach($address['addressId'], ['name' => $address['name']]);
+                }
+            }
+
+            return new AppUserResource($guest->load('addresses'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error creating guest'], 500);
+        }
     }
 
     /**
@@ -53,7 +77,36 @@ class AppUser extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $guest = AppUserModel::whereDoesntHave('clientUser')
+                ->whereDoesntHave('employeeUser')
+                ->findOrFail($id);
+
+            $validated = $request->validate([
+                'email' => 'sometimes|email|max:64|unique:appUsers,email,' . $id,
+                'name' => 'sometimes|string|max:64',
+                'surname' => 'sometimes|string|max:128',
+                'phone' => 'sometimes|string|max:32',
+                'addresses' => 'nullable|array',
+                'addresses.*.addressId' => 'required|exists:addresses,id',
+                'addresses.*.name' => 'required|string|max:128'
+            ]);
+
+            $guest->update($validated);
+
+            if (isset($validated['addresses'])) {
+                $guest->addresses()->detach();
+                foreach ($validated['addresses'] as $address) {
+                    $guest->addresses()->attach($address['addressId'], ['name' => $address['name']]);
+                }
+            }
+
+            return new AppUserResource($guest->load('addresses'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error updating guest'], 500);
+        }
     }
 
     /**
@@ -61,6 +114,17 @@ class AppUser extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $guest = AppUserModel::whereDoesntHave('clientUser')
+                ->whereDoesntHave('employeeUser')
+                ->findOrFail($id);
+
+            $guest->addresses()->detach();
+            $guest->delete();
+
+            return response()->json(['message' => 'Guest deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting guest'], 500);
+        }
     }
 }

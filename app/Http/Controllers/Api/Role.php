@@ -28,7 +28,31 @@ class Role extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|unique:roles',
+                'permissions' => 'nullable|array',
+                'permissions.*.permissionId' => 'required|exists:permissions,id',
+                'permissions.*.permissionLevel' => 'required|in:0,1,2,3'
+            ]);
+
+            $role = RoleModel::create(['name' => $validated['name']]);
+
+            if (isset($validated['permissions'])) {
+                foreach ($validated['permissions'] as $permission) {
+                    $role->permission()->attach(
+                        $permission['permissionId'],
+                        ['permissionLevel' => $permission['permissionLevel']]
+                    );
+                }
+            }
+
+            return new RoleResource($role->load('permission'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error creating role'], 500);
+        }
     }
 
     /**
@@ -49,7 +73,34 @@ class Role extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $role = RoleModel::findOrFail($id);
+
+            $validated = $request->validate([
+                'name' => 'sometimes|string|unique:roles,name,' . $id,
+                'permissions' => 'nullable|array',
+                'permissions.*.permissionId' => 'required|exists:permissions,id',
+                'permissions.*.permissionLevel' => 'required|in:0,1,2,3'
+            ]);
+
+            $role->update($validated);
+
+            if (isset($validated['permissions'])) {
+                $role->permission()->detach();
+                foreach ($validated['permissions'] as $permission) {
+                    $role->permission()->attach(
+                        $permission['permissionId'],
+                        ['permissionLevel' => $permission['permissionLevel']]
+                    );
+                }
+            }
+
+            return new RoleResource($role->load('permission'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error updating role'], 500);
+        }
     }
 
     /**
@@ -57,6 +108,13 @@ class Role extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $role = RoleModel::findOrFail($id);
+            $role->permission()->detach();
+            $role->delete();
+            return response()->json(['message' => 'Role deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting role'], 500);
+        }
     }
 }

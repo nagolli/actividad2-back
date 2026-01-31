@@ -28,7 +28,39 @@ class ClientUser extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email|unique:appUsers|max:64',
+                'name' => 'required|string|max:64',
+                'surname' => 'required|string|max:128',
+                'phone' => 'required|string|max:32',
+                'password' => 'required|string|min:8',
+                'addresses' => 'nullable|array',
+                'addresses.*.addressId' => 'required|exists:addresses,id',
+                'addresses.*.name' => 'required|string|max:128'
+            ]);
+            //Primero crear el appUser al que va a vincular el clientUser
+            $guest = AppUserModel::create($validated);
+
+            if (isset($validated['addresses'])) {
+                foreach ($validated['addresses'] as $address) {
+                    $guest->addresses()->attach($address['addressId'], ['name' => $address['name']]);
+                }
+            }
+            //Luego inicilaizar el clientUser vinculado al appUser creado
+            $client = ClientUserModel::create([
+            'appUserId' => $guest->id,
+            'password' => Hash::make($request->password),
+            'points' => 0,
+            'level' => 1
+            ]);
+
+            return new ClientUserResource($client->load('appUser.addresses'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error creating client'], 500);
+        }
     }
 
     /**
@@ -49,7 +81,50 @@ class ClientUser extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $client = ClientUserModel::with('appUser')->findOrFail($id);
+
+            $validated = $request->validate([
+                'email' => 'sometimes|email|unique:app_users,email,' . $client->appUserId,
+                'name' => 'sometimes|string|max:64',
+                'surname' => 'sometimes|string|max:128',
+                'phone' => 'sometimes|string|max:32',
+                'addresses' => 'sometimes|array',
+                'points' => 'sometimes|array',
+                'password' => 'sometimes|string|min:8',
+                'addresses.*.addressId' => 'required|exists:addresses,id',
+                'addresses.*.name' => 'required|string|max:128',
+            ]);
+
+            $client->appUser->update(
+                collect($validated)->only([
+                    'email', 'name', 'surname', 'phone'
+                ])->toArray()
+            );
+
+            $client->update(
+                collect($validated)->only([
+                    'points', 'password'
+                ])->toArray()
+            );
+
+            if (array_key_exists('addresses', $validated)) {
+                $syncAddresses = [];
+
+                foreach ($validated['addresses'] as $address) {
+                    $syncAddresses[$address['addressId']] = [
+                        'name' => $address['name']
+                    ];
+                }
+
+                $client->appUser->addresses()->sync($syncAddresses);
+            }
+            return new ClientUserResource($client->load('appUser.addresses'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error updating client'], 500);
+        }
     }
 
     /**
@@ -57,6 +132,19 @@ class ClientUser extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $client = ClientUserModel::findOrFail($id);
+
+            //Caso 1, el cliente no es tambien empleado -> Borra en cadena appUser y desvincula direcc
+            if (!$client->appUser->employeeUser) {
+                $client->appUser()->addresses()->detach();
+                $client->appUser()->delete();
+            }
+            //Caso 2, el cliente es tambien empleado, solo elimina este cliente
+            $client->delete();
+            return response()->json(['message' => 'Client deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting client'], 500);
+        }
     }
 }

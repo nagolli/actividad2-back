@@ -27,7 +27,26 @@ class Address extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'street' => 'required|string|max:128',
+                'number' => 'required|string|max:10',
+                'city' => 'required|string|max:64',
+                'province' => 'required|string|max:64',
+                'postalCode' => 'required|string|max:8',
+                'country' => 'required|string|max:64',
+                'floor' => 'nullable|string|max:10',
+                'door' => 'nullable|string|max:10',
+                'staircase' => 'nullable|string|max:10',
+            ]);
+
+            $address = AddressModel::create($validated);
+            return new AddressResource($address);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error creating address'], 500);
+        }
     }
 
     /**
@@ -48,7 +67,30 @@ class Address extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $address = AddressModel::findOrFail($id);
+
+            $validated = $request->validate([
+                'street' => 'required|string|max:128',
+                'number' => 'required|string|max:10',
+                'city' => 'required|string|max:64',
+                'province' => 'required|string|max:64',
+                'postalCode' => 'required|string|max:8',
+                'country' => 'required|string|max:64',
+                'floor' => 'nullable|string|max:10',
+                'door' => 'nullable|string|max:10',
+                'staircase' => 'nullable|string|max:10',
+            ]);
+
+            $address->update($validated);
+            return new AddressResource($address);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Address not found'], 404);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error updating address'], 500);
+        }
     }
 
     /**
@@ -56,6 +98,13 @@ class Address extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $address = AddressModel::findOrFail($id);
+            $address->appUsers()->detach();
+            $address->delete();
+            return response()->json(['message' => 'Address deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error deleting address'], 500);
+        }
     }
 }

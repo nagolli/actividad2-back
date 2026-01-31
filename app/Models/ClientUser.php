@@ -18,4 +18,32 @@ class ClientUser extends Model
     {
         return $this->belongsTo(AppUser::class, 'appUserId');
     }
+
+    /**
+     * Recalcula el nivel según los puntos
+     */
+    public function recalculateLevel(): void
+    {
+        $this->level = intdiv($this->points, 100) + 1;
+    }
+
+    /**
+     * Suma puntos y actualiza nivel
+     */
+    public function addPoints(int $points): void
+    {
+        $this->points += $points;
+        $this->recalculateLevel();
+        $this->save();
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($client) {
+            if ($client->isDirty('points')) {
+                $client->recalculateLevel();
+            }
+        });
+    }
 }
+

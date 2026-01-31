@@ -25,8 +25,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('appUserId')->constrained('appUsers')->onDelete('cascade');
             $table->string('password', 64);
-            $table->integer('level');
-            $table->integer('points');
+            $table->integer('level')->default(1);
+            $table->integer('points')->default(0);
             $table->timestamps();
         });
 

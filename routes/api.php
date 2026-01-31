@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ClientUser;
 use App\Http\Controllers\Api\AppUser;
 use App\Http\Controllers\Api\Address;
 use App\Http\Controllers\Api\Permission;
+use App\Http\Controllers\Api\AuthController;
 
 Route::get('role', [Role::class, 'index']);
 Route::post('role', [Role::class, 'store']);
@@ -40,3 +41,5 @@ Route::delete('address/{id}', [Address::class, 'destroy']);
 
 Route::get('permission', [Permission::class, 'index']);
 Route::get('permission/{id}', [Permission::class, 'show']);
+
+Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
