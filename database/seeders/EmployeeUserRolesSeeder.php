@@ -18,7 +18,7 @@ class EmployeeUserRolesSeeder extends Seeder
     {
         $adminUser = AppUser::where('email', 'admin@example.com')->first();
         $adminEmployee = EmployeeUser::where('appUserId', $adminUser?->id)->first();
-        $superadminRole = Role::where('name', 'superadmin')->first();
+        $superadminRole = Role::where('name', 'Administrador')->first();
         
         if ($adminEmployee && $superadminRole) {
             EmployeeUserRole::create([

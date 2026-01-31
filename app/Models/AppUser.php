@@ -15,17 +15,17 @@ class AppUser extends Model
 
     public function clientUser()
     {
-        return $this->hasOne(ClientUsers::class, 'appUserId');
+        return $this->hasOne(ClientUser::class, 'appUserId');
     }
 
     public function employeeUser()
     {
-        return $this->hasOne(EmployeeUsers::class, 'appUserId');
+        return $this->hasOne(EmployeeUser::class, 'appUserId');
     }
 
     public function addresses()
     {
-        return $this->belongsToMany(Addresses::class, 'appUserAddresses', 'appUserId', 'addressId')
+        return $this->belongsToMany(Address::class, 'appUserAddresses', 'appUserId', 'addressId')
             ->withPivot('name', 'created_at', 'updated_at')
             ->withTimestamps();
     }

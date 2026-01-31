@@ -16,6 +16,6 @@ class ClientUser extends Model
 
     public function appUser()
     {
-        return $this->belongsTo(AppUsers::class, 'appUserId');
+        return $this->belongsTo(AppUser::class, 'appUserId');
     }
 }

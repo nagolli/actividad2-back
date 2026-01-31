@@ -13,13 +13,13 @@ class Role extends Model
     protected $table = 'roles';
     protected $fillable = ['name'];
 
-    public function employeeUsers()
+    public function employeeUser()
     {
-        return $this->belongsToMany(EmployeeUsers::class, 'employeeUserRoles', 'roleId', 'employeeUserId')
+        return $this->belongsToMany(EmployeeUser::class, 'employeeUserRoles', 'roleId', 'employeeUserId')
             ->withTimestamps();
     }
 
-    public function permissions()
+    public function permission()
     {
         return $this->belongsToMany(Permission::class, 'rolesPermissions', 'roleId', 'permissionId')
             ->withPivot('permissionLevel')

@@ -17,12 +17,12 @@ class EmployeeUser extends Model
 
     public function appUser()
     {
-        return $this->belongsTo(AppUsers::class, 'appUserId');
+        return $this->belongsTo(AppUser::class, 'appUserId');
     }
 
-    public function roles()
+    public function role()
     {
-        return $this->belongsToMany(Roles::class, 'employeeUserRoles', 'employeeUserId', 'roleId')
+        return $this->belongsToMany(Role::class, 'employeeUserRoles', 'employeeUserId', 'roleId')
             ->withTimestamps();
     }
 }

@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\EmployeeUser as EmployeeUserModel;
+use App\Http\Resources\EmployeeUserResource;
+use App\Http\Resources\EmployeeUserListResource;
+
 
 class EmployeeUser extends Controller
 {
@@ -12,7 +16,12 @@ class EmployeeUser extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $employees = EmployeeUserModel::with('appUser')->get();
+            return EmployeeUserListResource::collection($employees);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching employees'], 500);
+        }
     }
 
     /**
@@ -28,7 +37,12 @@ class EmployeeUser extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $employee = EmployeeUserModel::with('appUser.addresses','role.permission')->findOrFail($id);
+            return new EmployeeUserResource($employee); // usar recurso simple
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
     }
 
     /**

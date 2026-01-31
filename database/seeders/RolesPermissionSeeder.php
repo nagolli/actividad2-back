@@ -32,11 +32,10 @@ class RolesPermissionSeeder extends Seeder
             4 => ['permissionLevel' => 1],
         ]);
 
-        // Encargado de Almacén - edición existencias (2), edición reservas (2), consulta productos (1)
+        // Encargado de Almacén - edición existencias (2), consulta productos (1)
         Role::where('name', 'Encargado de Almacén')->first()->permissions()->attach([
             2 => ['permissionLevel' => 1],
             3 => ['permissionLevel' => 2],
-            4 => ['permissionLevel' => 2],
         ]);
 
         // Social Media Manager - edición promociones (2) y permisos para gestionar eventos y reservas

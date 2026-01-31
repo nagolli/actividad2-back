@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ClientUser as ClientUserModel;
+use App\Http\Resources\ClientUserResource;
+use App\Http\Resources\ClientUserListResource;
 
 class ClientUser extends Controller
 {
@@ -12,7 +15,12 @@ class ClientUser extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $clients = ClientUserModel::with('appUser')->get();
+            return ClientUserListResource::collection($clients);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching clients'], 500);
+        }
     }
 
     /**
@@ -28,7 +36,12 @@ class ClientUser extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $client = ClientUserModel::with('appUser.addresses')->findOrFail($id);
+            return new ClientUserResource($client);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Client not found'], 404);
+        }
     }
 
     /**

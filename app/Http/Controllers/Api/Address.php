@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Role as RoleModel;
-use App\Http\Resources\RoleResource;
-use App\Http\Resources\RoleListResource;
+use App\Models\Address as AddressModel;
+use App\Http\Resources\AddressResource;
 
-class Role extends Controller
+class Address extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,10 +15,10 @@ class Role extends Controller
     public function index()
     {
         try {
-            $roles = RoleModel::all();
-            return RoleListResource::collection($roles);
+            $addresses = AddressModel::all();
+            return AddressResource::collection($addresses);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error fetching roles'], 500);
+            return response()->json(['error' => 'Error fetching addresses'], 500);
         }
     }
 
@@ -37,10 +36,10 @@ class Role extends Controller
     public function show(string $id)
     {
         try {
-            $role = RoleModel::with('permission')->findOrFail($id);
-            return new RoleResource($role);
+            $address = AddressModel::findOrFail($id);
+            return new AddressResource($address);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Role not found'], 404);
+            return response()->json(['error' => 'Address not found'], 404);
         }
     }
 
