@@ -44,8 +44,6 @@ class EmployeeUser extends Controller
                 'roles.*.roleId' => 'required|exists:roles,id',
             ]);
 
-            DB::transaction(function () use ($validated, $employee) {
-
             //Primero crear el appUser al que va a vincular el employeeUser
             $guest = AppUserModel::create($validated);
 

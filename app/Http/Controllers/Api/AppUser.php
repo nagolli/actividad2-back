@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AppUser as AppUserModel;
 use App\Models\Address as AddressModel;
+use App\Http\Resources\AppUserResource;
+use App\Http\Resources\AppUserListResource;
 
 class AppUser extends Controller
 {
@@ -18,7 +20,7 @@ class AppUser extends Controller
             $guests = AppUserModel::whereDoesntHave('clientUser')
                 ->whereDoesntHave('employeeUser')
                 ->get();
-            return ClientUserListResource::collection($guests);
+            return AppUserListResource::collection($guests);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching guests'], 500);
         }
@@ -66,7 +68,7 @@ class AppUser extends Controller
                 ->whereDoesntHave('employeeUser')
                 ->with('addresses')
                 ->findOrFail($id);
-            return new ClientUserResource($guest);
+            return new AppUserResource($guest);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Guest not found'], 404);
         }
