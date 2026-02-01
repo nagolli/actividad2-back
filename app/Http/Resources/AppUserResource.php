@@ -18,7 +18,8 @@ class AppUserResource extends JsonResource
             'id' => $this->id,
             'email' => $this->email,
             'name' => $this->name,
-            'addresses' => $this->addresses->map(fn ($a) => [
+            'surname' => $this->surname,
+            'addresses' => $this->addresses->map(fn($a) => [
                 'city' => $a->city,
                 'street' => $a->street,
                 'number' => $a->number,

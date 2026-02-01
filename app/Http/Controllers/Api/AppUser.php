@@ -36,7 +36,7 @@ class AppUser extends Controller
                 'email' => 'required|email|unique:appUsers|max:64',
                 'name' => 'required|string|max:64',
                 'surname' => 'required|string|max:128',
-                'phone' => 'required|string|max:32',
+                'phone' => 'nullable|string|max:32',
                 'addresses' => 'nullable|array',
                 'addresses.*.addressId' => 'required|exists:addresses,id',
                 'addresses.*.name' => 'required|string|max:128'
@@ -89,7 +89,7 @@ class AppUser extends Controller
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',
-                'addresses' => 'nullable|array',
+                'addresses' => 'sometimes|array',
                 'addresses.*.addressId' => 'required|exists:addresses,id',
                 'addresses.*.name' => 'required|string|max:128'
             ]);

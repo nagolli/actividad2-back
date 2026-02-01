@@ -71,15 +71,15 @@ class Address extends Controller
             $address = AddressModel::findOrFail($id);
 
             $validated = $request->validate([
-                'street' => 'required|string|max:128',
-                'number' => 'required|string|max:10',
-                'city' => 'required|string|max:64',
-                'province' => 'required|string|max:64',
-                'postalCode' => 'required|string|max:8',
-                'country' => 'required|string|max:64',
-                'floor' => 'nullable|string|max:10',
-                'door' => 'nullable|string|max:10',
-                'staircase' => 'nullable|string|max:10',
+                'street' => 'sometimes|string|max:128',
+                'number' => 'sometimes|string|max:10',
+                'city' => 'sometimes|string|max:64',
+                'province' => 'sometimes|string|max:64',
+                'postalCode' => 'sometimes|string|max:8',
+                'country' => 'sometimes|string|max:64',
+                'floor' => 'sometimes|string|max:10',
+                'door' => 'sometimes|string|max:10',
+                'staircase' => 'sometimes|string|max:10',
             ]);
 
             $address->update($validated);

@@ -38,7 +38,7 @@ class Auth extends Controller
             //Si tenemos appUser, del EmployeeUser asociado ver si coincide la contraseña, en ese caso sí, esta autenticado
             $employeeUser = $appUser->employeeUser;
             if ($employeeUser && Hash::check($credentials['password'], $employeeUser->password)) {
-                $isEmployee = true;
+                $isEmployee = !$employeeUser->isInactive;
             }
 
             if (!($isClient || $isEmployee)) {
@@ -49,14 +49,16 @@ class Auth extends Controller
                 'appClientId' => $appUser->id,
                 'is_client' => $isClient,
                 'is_employee' => $isEmployee,
-                'employee_permissions' => $isEmployee ? $appUser->employeeUser->roles->flatMap(function ($role) {
-                    return $role->permissions->map(function ($permission) use ($role) {
-                        return [
-                            'id' => $permission->id,
-                            'lvl' => $permission->pivot->permissionLevel,
-                        ];
-                    });
-                })->unique()->values() : []
+                'employee_permissions' => $isEmployee
+                    ? $employeeUser->load('role.permission')->role
+                        ->flatMap(function ($role) {
+                            return $role->permission->map(function ($permission) {
+                                return [
+                                    'id' => $permission->id,
+                                    'lvl' => $permission->pivot->permissionLevel,
+                                ];
+                            });
+                        })->unique()->values() : []
             ];
             return response()->json($response, 200);
         } catch (\Exception $e) {

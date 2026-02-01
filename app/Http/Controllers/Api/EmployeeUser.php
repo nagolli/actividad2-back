@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\EmployeeUser as EmployeeUserModel;
 use App\Models\AppUser as AppUserModel;
@@ -41,7 +42,7 @@ class EmployeeUser extends Controller
                 'addresses' => 'nullable|array',
                 'addresses.*.addressId' => 'required|exists:addresses,id',
                 'addresses.*.name' => 'required|string|max:128',
-                'roles' => 'nullable|array',
+                'roles' => 'required|array',
                 'roles.*.roleId' => 'required|exists:roles,id',
             ]);
 
@@ -54,7 +55,11 @@ class EmployeeUser extends Controller
                 }
             }
             //Luego inicilaizar el employeeUser vinculado al appUser creado
-            $employee = EmployeeUserModel::create(['appUserId' => $guest->id]);
+            $employee = EmployeeUserModel::create([
+                'appUserId' => $guest->id,
+                'password' => Hash::make($request->password),
+                'isInactive' => $request->isInactive ?? false
+            ]);
 
             if (isset($validated['roles'])) {
                 foreach ($validated['roles'] as $role) {
@@ -88,10 +93,11 @@ class EmployeeUser extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $employee = EmployeeUserModel::with('appUser')->findOrFail($id);
+            $appUser = AppUserModel::findOrFail($id);
+            $employee = EmployeeUserModel::where('appUserId', $appUser->id)->firstOrFail();
 
             $validated = $request->validate([
-                'email' => 'sometimes|email|unique:app_users,email,' . $employee->appUserId,
+                'email' => 'sometimes|email|unique:appUsers,email,' . $employee->appUserId,
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',
@@ -104,7 +110,7 @@ class EmployeeUser extends Controller
                 'roles.*.roleId' => 'required|exists:roles,id',
             ]);
 
-            $employee->appUser->update(
+            $appUser->update(
                 collect($validated)->only([
                     'email',
                     'name',
@@ -122,7 +128,7 @@ class EmployeeUser extends Controller
                     ];
                 }
 
-                $employee->appUser->addresses()->sync($syncAddresses);
+                $appUser->addresses()->sync($syncAddresses);
             }
 
             $employee->update(
@@ -151,12 +157,19 @@ class EmployeeUser extends Controller
     public function destroy(string $id)
     {
         try {
-            $employee = EmployeeUserModel::findOrFail($id);
+            $appUser = AppUserModel::findOrFail($id);
+            $employee = EmployeeUserModel::where('appUserId', $appUser->id)->firstOrFail();
 
             //Caso 1, si el empleado es el único que tiene permiso 0 a nivel 3, no se puede borrar
-            $criticalPermissions = $employee->role->permission()
-                ->where('permissionLevel', '>=', 3)
-                ->pluck('permissions.id')
+            $criticalPermissions = $employee->role
+                ->flatMap(
+                    fn($role) =>
+                    $role->permission
+                        ->where('pivot.permissionLevel', '>=', 3)
+                )
+                ->pluck('id')
+                ->unique()
+                ->values()
                 ->toArray();
 
             foreach ($criticalPermissions as $permissionId) {
@@ -170,9 +183,9 @@ class EmployeeUser extends Controller
             }
 
             //Caso 1, el empleado no es tambien cliente -> Borra en cadena appUser y desvincula direccion
-            if (!$employee->appUser->clientUser) {
-                $employee->appUser()->addresses()->detach();
-                $employee->appUser()->delete();
+            if (!$appUser->clientUser) {
+                $appUser->addresses()->detach();
+                $appUser->delete();
             }
             //Caso 2, el cliente es tambien empleado, solo elimina este empleado
             //Desvincular roles y borrar empleado

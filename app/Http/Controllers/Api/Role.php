@@ -78,7 +78,7 @@ class Role extends Controller
 
             $validated = $request->validate([
                 'name' => 'sometimes|string|unique:roles,name,' . $id,
-                'permissions' => 'nullable|array',
+                'permissions' => 'sometimes|array',
                 'permissions.*.permissionId' => 'required|exists:permissions,id',
                 'permissions.*.permissionLevel' => 'required|in:0,1,2,3'
             ]);

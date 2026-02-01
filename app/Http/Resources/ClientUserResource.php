@@ -18,7 +18,7 @@ class ClientUserResource extends JsonResource
             'id' => $this->appUser->id,
             'email' => $this->appUser->email,
             'name' => $this->appUser->name,
-            'addresses' => $this->appUser->addresses->map(fn ($a) => [
+            'addresses' => $this->appUser->addresses->map(fn($a) => [
                 'city' => $a->city,
                 'street' => $a->street,
                 'number' => $a->number,

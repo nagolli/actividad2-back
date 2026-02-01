@@ -84,21 +84,24 @@ class ClientUser extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $client = ClientUserModel::with('appUser')->findOrFail($id);
+
+
+            $appUser = AppUserModel::findOrFail($id);
+            $client = ClientUserModel::where('appUserId', $appUser->id)->firstOrFail();
 
             $validated = $request->validate([
-                'email' => 'sometimes|email|unique:app_users,email,' . $client->appUserId,
+                'email' => 'sometimes|email|unique:appUsers,email,' . $client->appUserId,
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',
                 'addresses' => 'sometimes|array',
-                'points' => 'sometimes|array',
+                'points' => 'sometimes|integer|min:0',
                 'password' => 'sometimes|string|min:8',
                 'addresses.*.addressId' => 'required|exists:addresses,id',
                 'addresses.*.name' => 'required|string|max:128',
             ]);
 
-            $client->appUser->update(
+            $appUser->update(
                 collect($validated)->only([
                     'email',
                     'name',
@@ -123,7 +126,7 @@ class ClientUser extends Controller
                     ];
                 }
 
-                $client->appUser->addresses()->sync($syncAddresses);
+                $appUser->addresses()->sync($syncAddresses);
             }
             return new ClientUserResource($client->load('appUser.addresses'));
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -139,12 +142,13 @@ class ClientUser extends Controller
     public function destroy(string $id)
     {
         try {
-            $client = ClientUserModel::findOrFail($id);
+            $appUser = AppUserModel::findOrFail($id);
+            $client = ClientUserModel::where('appUserId', $appUser->id)->firstOrFail();
 
             //Caso 1, el cliente no es tambien empleado -> Borra en cadena appUser y desvincula direcc
             if (!$client->appUser->employeeUser) {
-                $client->appUser()->addresses()->detach();
-                $client->appUser()->delete();
+                $appUser->addresses()->detach();
+                $appUser->delete();
             }
             //Caso 2, el cliente es tambien empleado, solo elimina este cliente
             $client->delete();
