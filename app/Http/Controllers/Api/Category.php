@@ -9,6 +9,29 @@ use App\Models\Category as CategoryModel;
 class Category extends Controller
 {
     /**
+     * Display a listing of the resource in label/value format.
+     */
+    public function options()
+    {
+        try {
+            $categories = CategoryModel::query()
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($category) {
+                    return [
+                        'label' => $category->name,
+                        'value' => (string) $category->id,
+                    ];
+                });
+
+            return response()->json($categories);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching category options'], 500);
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

@@ -9,6 +9,29 @@ use App\Models\Supplier as SupplierModel;
 class Supplier extends Controller
 {
     /**
+     * Display a listing of the resource in label/value format.
+     */
+    public function options()
+    {
+        try {
+            $suppliers = SupplierModel::query()
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get()
+                ->map(function ($supplier) {
+                    return [
+                        'label' => $supplier->name,
+                        'value' => (string) $supplier->id,
+                    ];
+                });
+
+            return response()->json($suppliers);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching supplier options'], 500);
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()

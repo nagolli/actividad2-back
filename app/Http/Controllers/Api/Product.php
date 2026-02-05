@@ -9,6 +9,64 @@ use App\Models\Product as ProductModel;
 class Product extends Controller
 {
     /**
+     * Get minimum and maximum price from products.
+     */
+    public function priceRange()
+    {
+        try {
+            $minPrice = (float) (ProductModel::min('price') ?? 0);
+            $maxPrice = (float) (ProductModel::max('price') ?? 0);
+
+            return response()->json([
+                'min' => $minPrice,
+                'max' => $maxPrice,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching price range'], 500);
+        }
+    }
+
+    /**
+     * Filter products by multiple criteria.
+     */
+    public function filter(Request $request)
+    {
+        try {
+            $query = ProductModel::query();
+
+            // Filter by name (partial match)
+            if ($request->has('name') && $request->name) {
+                $query->where('name', 'like', '%' . $request->name . '%');
+            }
+
+            // Filter by category
+            if ($request->has('category') && $request->category) {
+                $query->where('categoryId', $request->category);
+            }
+
+            // Filter by supplier
+            if ($request->has('supplier') && $request->supplier) {
+                $query->where('supplierId', $request->supplier);
+            }
+
+            // Filter by minimum price
+            if ($request->has('min') && is_numeric($request->min)) {
+                $query->where('price', '>=', (float) $request->min);
+            }
+
+            // Filter by maximum price
+            if ($request->has('max') && is_numeric($request->max)) {
+                $query->where('price', '<=', (float) $request->max);
+            }
+
+            $products = $query->get();
+            return response()->json($products);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error filtering products'], 500);
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
