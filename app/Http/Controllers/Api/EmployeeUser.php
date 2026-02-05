@@ -16,10 +16,12 @@ class EmployeeUser extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $employees = EmployeeUserModel::with('appUser')->get();
+            $perPage = $request->input('per_page', default: 100);
+            $page = $request->input('page', 1);
+            $employees = EmployeeUserModel::with('appUser')->paginate($perPage, ['*'], 'page', $page);
             return EmployeeUserListResource::collection($employees);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching employees'], 500);

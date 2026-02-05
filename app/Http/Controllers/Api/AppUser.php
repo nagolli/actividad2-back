@@ -14,12 +14,14 @@ class AppUser extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
+            $perPage = $request->input('per_page', default: 100);
+            $page = $request->input('page', 1);
             $guests = AppUserModel::whereDoesntHave('clientUser')
                 ->whereDoesntHave('employeeUser')
-                ->get();
+                ->paginate($perPage, ['*'], 'page', $page);
             return AppUserListResource::collection($guests);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching guests'], 500);

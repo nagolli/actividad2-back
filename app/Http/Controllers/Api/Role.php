@@ -13,10 +13,12 @@ class Role extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $roles = RoleModel::all();
+            $perPage = $request->input('per_page', default: 100);
+            $page = $request->input('page', 1);
+            $roles = RoleModel::paginate($perPage, ['*'], 'page', $page);
             return RoleListResource::collection($roles);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching roles'], 500);

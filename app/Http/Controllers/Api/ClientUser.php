@@ -15,10 +15,12 @@ class ClientUser extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $clients = ClientUserModel::with('appUser')->get();
+            $perPage = $request->input('per_page', default: 100);
+            $page = $request->input('page', 1);
+            $clients = ClientUserModel::with('appUser')->paginate($perPage, ['*'], 'page', $page);
             return ClientUserListResource::collection($clients);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching clients'], 500);

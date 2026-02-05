@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,6 +18,7 @@ return new class extends Migration
             $table->string('surname', 128)->nullable();
             $table->string('phone', 32)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('clientUsers', function (Blueprint $table) {
@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('level')->default(1);
             $table->integer('points')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('employeeUsers', function (Blueprint $table) {
@@ -36,12 +37,14 @@ return new class extends Migration
             $table->string('password', 64);
             $table->boolean('isInactive')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('employeeUserRoles', function (Blueprint $table) {
@@ -49,6 +52,7 @@ return new class extends Migration
             $table->foreignId('employeeUserId')->constrained('employeeUsers')->onDelete('cascade');
             $table->foreignId('roleId')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
             $table->unique(['employeeUserId', 'roleId']);
         });
 
@@ -56,6 +60,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id')->primary();
             $table->string('description')->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('rolesPermissions', function (Blueprint $table) {
@@ -64,6 +69,7 @@ return new class extends Migration
             $table->foreignId('permissionId')->constrained('permissions')->onDelete('cascade');
             $table->unsignedTinyInteger('permissionLevel')->default(0);
             $table->timestamps();
+            $table->softDeletes();
             $table->unique(['roleId', 'permissionId']);
         });
         DB::statement("ALTER TABLE `rolesPermissions` ADD CONSTRAINT `chk_permission_level` CHECK (`permissionLevel` IN (0,1,2,3))");
@@ -80,6 +86,7 @@ return new class extends Migration
             $table->string('door')->nullable();
             $table->string('staircase')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('appUserAddresses', function (Blueprint $table) {
@@ -88,6 +95,7 @@ return new class extends Migration
             $table->foreignId('appUserId')->constrained('appUsers')->onDelete('cascade');
             $table->string('name', 128)->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->unique(['addressId', 'appUserId']);
         });
     }
