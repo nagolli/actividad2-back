@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('inactive')->default(false);
             $table->timestamp('createdAt')->useCurrent();
             $table->timestamp('updatedAt')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamp('deletedAt')->nullable();
         });
     }
 

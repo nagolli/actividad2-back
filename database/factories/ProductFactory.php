@@ -19,12 +19,16 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $width = 400;
+        $height = 400;
+        $randomId = $this->faker->numberBetween(1, 100000);
+
         return [
             'name' => $this->faker->unique()->word(),
             'price' => $this->faker->randomFloat(2, 10, 1000),
             'description' => $this->faker->sentence(),
             'stock' => $this->faker->numberBetween(0, 100),
-            'image' => $this->faker->imageUrl(),
+            'image' => "https://picsum.photos/seed/{$randomId}/{$width}/{$height}",
             'inactive' => $this->faker->boolean(),
             'categoryId' => Category::factory(),
             'supplierId' => Supplier::factory(),

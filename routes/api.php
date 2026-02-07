@@ -48,18 +48,22 @@ Route::get('permission/{id}', [Permission::class, 'show']);
 Route::post('login', [Auth::class, 'login']);
 
 Route::get('category', [Category::class, 'index']);
+Route::get('category/options', [Category::class, 'options']);
 Route::post('category', [Category::class, 'store']);
 Route::get('category/{id}', [Category::class, 'show']);
 Route::put('category/{id}', [Category::class, 'update']);
 Route::delete('category/{id}', [Category::class, 'destroy']);
 
 Route::get('supplier', [Supplier::class, 'index']);
+Route::get('supplier/options', [Supplier::class, 'options']);
 Route::post('supplier', [Supplier::class, 'store']);
 Route::get('supplier/{id}', [Supplier::class, 'show']);
 Route::put('supplier/{id}', [Supplier::class, 'update']);
 Route::delete('supplier/{id}', [Supplier::class, 'destroy']);
 
 Route::get('product', [Product::class, 'index']);
+Route::get('product/price-range', [Product::class, 'priceRange']);
+Route::post('product/filter', [Product::class, 'filter']);
 Route::post('product', [Product::class, 'store']);
 Route::get('product/{id}', [Product::class, 'show']);
 Route::put('product/{id}', [Product::class, 'update']);
