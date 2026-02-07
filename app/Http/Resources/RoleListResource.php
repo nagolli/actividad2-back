@@ -12,11 +12,16 @@ class RoleListResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'name' => $this->name ?? null
+            'name' => $this->name ?? null,
+            'permissions' => $this->permission->map(fn($p) => [
+                'description' => $p->description,
+                'level' => $p->pivot->permissionLevel,
+            ])
         ];
     }
 }
