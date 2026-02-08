@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Role as RoleModel;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\RoleListResource;
+use Illuminate\Validation\Rule;
 
 class Role extends Controller
 {
@@ -32,7 +33,7 @@ class Role extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|unique:roles',
+                'name' => ['required', 'string', Rule::unique('roles', 'name')->whereNull('deleted_at'),],
                 'permissions' => 'nullable|array',
                 'permissions.*.permissionId' => 'required|exists:permissions,id',
                 'permissions.*.permissionLevel' => 'required|in:0,1,2,3'
@@ -79,7 +80,7 @@ class Role extends Controller
             $role = RoleModel::findOrFail($id);
 
             $validated = $request->validate([
-                'name' => 'sometimes|string|unique:roles,name,' . $id,
+                'name' => ['sometimes', 'string', Rule::unique('roles', 'name')->ignore($id)->whereNull('deleted_at'),],
                 'permissions' => 'sometimes|array',
                 'permissions.*.permissionId' => 'required|exists:permissions,id',
                 'permissions.*.permissionLevel' => 'required|in:0,1,2,3'

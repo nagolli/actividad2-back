@@ -8,6 +8,7 @@ use App\Models\AppUser as AppUserModel;
 use App\Models\Address as AddressModel;
 use App\Http\Resources\AppUserResource;
 use App\Http\Resources\AppUserListResource;
+use Illuminate\Validation\Rule;
 
 class AppUser extends Controller
 {
@@ -35,7 +36,7 @@ class AppUser extends Controller
     {
         try {
             $validated = $request->validate([
-                'email' => 'required|email|unique:appUsers|max:64',
+                'email' => ['required', 'email', 'max:64', Rule::unique('appUsers', 'email')->whereNull('deleted_at'),],
                 'name' => 'required|string|max:64',
                 'surname' => 'required|string|max:128',
                 'phone' => 'nullable|string|max:32',
@@ -87,7 +88,7 @@ class AppUser extends Controller
                 ->findOrFail($id);
 
             $validated = $request->validate([
-                'email' => 'sometimes|email|max:64|unique:appUsers,email,' . $id,
+                'email' => ['sometimes', 'email', 'max:64', Rule::unique('appUsers', 'email')->ignore($id)->whereNull('deleted_at'),],
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',

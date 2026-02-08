@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product as ProductModel;
+use Illuminate\Validation\Rule;
 
 class Product extends Controller
 {
@@ -28,7 +29,7 @@ class Product extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:products',
+                'name' => ['required', 'string', 'max:255', Rule::unique('products', 'name')->whereNull('deleted_at'),],
                 'price' => 'required|numeric|min:0',
                 'description' => 'nullable|string',
                 'stock' => 'required|integer|min:0',
@@ -67,16 +68,16 @@ class Product extends Controller
     {
         try {
             $product = ProductModel::findOrFail($id);
-            
+
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:products,name,' . $id,
-                'price' => 'required|numeric|min:0',
-                'description' => 'nullable|string',
-                'stock' => 'required|integer|min:0',
-                'image' => 'nullable|string',
+                'name' => ['sometimes', 'string', 'max:255', Rule::unique('products', 'name')->ignore($id)->whereNull('deleted_at'),],
+                'price' => 'sometimes|numeric|min:0',
+                'description' => 'sometimes|string',
+                'stock' => 'sometimes|integer|min:0',
+                'image' => 'sometimes|string',
                 'inactive' => 'boolean',
-                'categoryId' => 'required|exists:categories,id',
-                'supplierId' => 'required|exists:suppliers,id',
+                'categoryId' => 'sometimes|exists:categories,id',
+                'supplierId' => 'sometimes|exists:suppliers,id',
             ]);
 
             $product->update($validated);

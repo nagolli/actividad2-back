@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Supplier as SupplierModel;
+use Illuminate\Validation\Rule;
 
 class Supplier extends Controller
 {
@@ -28,9 +29,9 @@ class Supplier extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:suppliers',
+                'name' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'name')->whereNull('deleted_at'),],
                 'phone' => 'nullable|string|max:32',
-                'email' => 'required|email|max:255|unique:suppliers',
+                'email' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'email')->whereNull('deleted_at'),],
                 'inactive' => 'boolean',
             ]);
 
@@ -63,11 +64,11 @@ class Supplier extends Controller
     {
         try {
             $supplier = SupplierModel::findOrFail($id);
-            
+
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:suppliers,name,' . $id,
-                'phone' => 'nullable|string|max:32',
-                'email' => 'required|email|max:255|unique:suppliers,email,' . $id,
+                'name' => ['sometimes', 'string', 'max:255', Rule::unique('suppliers', 'name')->ignore($id)->whereNull('deleted_at'),],
+                'phone' => 'sometimes|string|max:32',
+                'email' => ['sometimes', 'string', 'max:255', Rule::unique('suppliers', 'email')->ignore($id)->whereNull('deleted_at'),],
                 'inactive' => 'boolean',
             ]);
 
