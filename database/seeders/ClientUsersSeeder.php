@@ -16,7 +16,7 @@ class ClientUsersSeeder extends Seeder
     public function run(): void
     {
         $adminUser = AppUser::where('email', 'admin@example.com')->first();
-        
+
         if ($adminUser) {
             ClientUser::create([
                 'appUserId' => $adminUser->id,
@@ -25,5 +25,6 @@ class ClientUsersSeeder extends Seeder
                 'points' => 0,
             ]);
         }
+        ClientUser::factory()->count(10)->create();
     }
 }

@@ -16,7 +16,7 @@ class EmployeeUsersSeeder extends Seeder
     public function run(): void
     {
         $adminUser = AppUser::where('email', 'admin@example.com')->first();
-        
+
         if ($adminUser) {
             EmployeeUser::create([
                 'appUserId' => $adminUser->id,
@@ -24,5 +24,7 @@ class EmployeeUsersSeeder extends Seeder
                 'isInactive' => false,
             ]);
         }
+
+        EmployeeUser::factory()->count(5)->create();
     }
 }

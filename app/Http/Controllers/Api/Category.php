@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category as CategoryModel;
+use Illuminate\Validation\Rule;
 
 class Category extends Controller
 {
@@ -51,7 +52,7 @@ class Category extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:categories',
+                'name' => ['required', 'string', 'max:255', Rule::unique('categories', 'name')->whereNull('deleted_at'),],
             ]);
 
             $category = CategoryModel::create($validated);
@@ -83,9 +84,9 @@ class Category extends Controller
     {
         try {
             $category = CategoryModel::findOrFail($id);
-            
+
             $validated = $request->validate([
-                'name' => 'required|string|max:255|unique:categories,name,' . $id,
+                'name' => ['sometimes', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($id)->whereNull('deleted_at'),],
             ]);
 
             $category->update($validated);

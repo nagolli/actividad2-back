@@ -19,5 +19,7 @@ class AppUsersSeeder extends Seeder
             'surname' => '',
             'phone' => null,
         ]);
+
+        AppUser::factory()->count(30)->create();
     }
 }

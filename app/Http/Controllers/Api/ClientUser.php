@@ -9,6 +9,7 @@ use App\Models\ClientUser as ClientUserModel;
 use App\Models\AppUser as AppUserModel;
 use App\Http\Resources\ClientUserResource;
 use App\Http\Resources\ClientUserListResource;
+use Illuminate\Validation\Rule;
 
 class ClientUser extends Controller
 {
@@ -34,7 +35,7 @@ class ClientUser extends Controller
     {
         try {
             $validated = $request->validate([
-                'email' => 'required|email|unique:appUsers|max:64',
+                'email' => ['required', 'email', 'max:64', Rule::unique('appUsers', 'email')->whereNull('deleted_at'),],
                 'name' => 'required|string|max:64',
                 'surname' => 'required|string|max:128',
                 'phone' => 'required|string|max:32',
@@ -92,7 +93,7 @@ class ClientUser extends Controller
             $client = ClientUserModel::where('appUserId', $appUser->id)->firstOrFail();
 
             $validated = $request->validate([
-                'email' => 'sometimes|email|unique:appUsers,email,' . $client->appUserId,
+                'email' => ['sometimes', 'email', 'max:64', Rule::unique('appUsers', 'email')->ignore($client->appUserId)->whereNull('deleted_at'),],
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',

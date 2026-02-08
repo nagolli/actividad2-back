@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Role as RoleModel;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\RoleListResource;
+use Illuminate\Validation\Rule;
 
 class Role extends Controller
 {
@@ -32,7 +33,7 @@ class Role extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'required|string|unique:roles',
+                'name' => ['required', 'string', Rule::unique('roles', 'name')->whereNull('deleted_at'),],
                 'permissions' => 'nullable|array',
                 'permissions.*.permissionId' => 'required|exists:permissions,id',
                 'permissions.*.permissionLevel' => 'required|in:0,1,2,3'
@@ -79,7 +80,7 @@ class Role extends Controller
             $role = RoleModel::findOrFail($id);
 
             $validated = $request->validate([
-                'name' => 'sometimes|string|unique:roles,name,' . $id,
+                'name' => ['sometimes', 'string', Rule::unique('roles', 'name')->ignore($id)->whereNull('deleted_at'),],
                 'permissions' => 'sometimes|array',
                 'permissions.*.permissionId' => 'required|exists:permissions,id',
                 'permissions.*.permissionLevel' => 'required|in:0,1,2,3'
@@ -108,15 +109,44 @@ class Role extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id, string $newId)
     {
         try {
-            $role = RoleModel::findOrFail($id);
+            //Validacion
+            if ($id === $newId) {
+                return response()->json(['error' => 'El rol a eliminar no puede ser el mismo que el rol sustituto'], 422);
+            }
+            $role = RoleModel::find($id);
+            $newRole = RoleModel::find($newId);
+            if (!$role) {
+                return response()->json(['error' => 'El rol que intentas eliminar no existe'], 404);
+            }
+            if (!$newRole) {
+                return response()->json(['error' => 'El rol sustituto no existe'], 404);
+            }
+
+            // Obtener todos los empleados que tienen este rol
+            $employees = $role->employeeUser()->pluck('employeeUserId');
+
+            if ($employees->isNotEmpty()) {
+                // Asignar el nuevo rol a esos empleados (sin duplicar)
+                $newRole->employeeUser()->syncWithoutDetaching($employees);
+
+                // Quitar el rol antiguo de esos empleados
+                $role->employeeUser()->detach($employees);
+            }
+
+            // Quitar permisos y eliminar el rol
             $role->permission()->detach();
             $role->delete();
-            return response()->json(['message' => 'Role deleted successfully'], 200);
+
+            return response()->json(['message' => 'Role replaced and deleted successfully'], 200);
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error deleting role'], 500);
+            return response()->json([
+                'error' => 'Error deleting role',
+                'details' => $e->getMessage()
+            ], 500);
         }
     }
 }
