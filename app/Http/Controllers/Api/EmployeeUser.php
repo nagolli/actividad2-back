@@ -9,6 +9,7 @@ use App\Models\EmployeeUser as EmployeeUserModel;
 use App\Models\AppUser as AppUserModel;
 use App\Http\Resources\EmployeeUserResource;
 use App\Http\Resources\EmployeeUserListResource;
+use Illuminate\Validation\Rule;
 
 
 class EmployeeUser extends Controller
@@ -16,10 +17,12 @@ class EmployeeUser extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $employees = EmployeeUserModel::with('appUser')->get();
+            $perPage = $request->input('per_page', default: 100);
+            $page = $request->input('page', 1);
+            $employees = EmployeeUserModel::with('appUser')->paginate($perPage, ['*'], 'page', $page);
             return EmployeeUserListResource::collection($employees);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching employees'], 500);
@@ -33,7 +36,7 @@ class EmployeeUser extends Controller
     {
         try {
             $validated = $request->validate([
-                'email' => 'required|email|unique:appUsers|max:64',
+                'email' => ['required', 'email', 'max:64', Rule::unique('appUsers', 'email')->whereNull('deleted_at'),],
                 'name' => 'required|string|max:64',
                 'surname' => 'required|string|max:128',
                 'phone' => 'required|string|max:32',
@@ -97,7 +100,7 @@ class EmployeeUser extends Controller
             $employee = EmployeeUserModel::where('appUserId', $appUser->id)->firstOrFail();
 
             $validated = $request->validate([
-                'email' => 'sometimes|email|unique:appUsers,email,' . $employee->appUserId,
+                'email' => ['sometimes', 'email', 'max:64', Rule::unique('appUsers', 'email')->ignore(id: $employee->appUserId)->whereNull('deleted_at'),],
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',

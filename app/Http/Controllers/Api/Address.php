@@ -12,10 +12,12 @@ class Address extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $addresses = AddressModel::all();
+            $perPage = $request->input('per_page', default: 100);
+            $page = $request->input('page', 1);
+            $addresses = AddressModel::paginate($perPage, ['*'], 'page', $page);
             return AddressResource::collection($addresses);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching addresses'], 500);

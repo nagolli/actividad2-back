@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientUser extends Model
 {
     /** @use HasFactory<\Database\Factories\ClientUserFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'clientUsers';
     protected $fillable = ['appUserId', 'password', 'level', 'points'];

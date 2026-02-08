@@ -20,7 +20,7 @@ class ClientUserFactory extends Factory
     {
         return [
             'appUserId' => AppUser::factory(),
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('cliente'),
             'level' => $this->faker->numberBetween(0, 3),
             'points' => $this->faker->numberBetween(0, 1000),
         ];

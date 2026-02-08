@@ -20,7 +20,7 @@ class EmployeeUserFactory extends Factory
     {
         return [
             'appUserId' => AppUser::factory(),
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('empleado'),
             'isInactive' => $this->faker->boolean(20), // 20% probabilidad de estar inactivo
         ];
     }

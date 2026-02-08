@@ -23,6 +23,7 @@ class RolesPermissionSeeder extends Seeder
         // Recursos Humanos - gestión avanzada de roles (3), consulta permisos (1)
         Role::where('name', 'Recursos Humanos')->first()->permission()->attach([
             1 => ['permissionLevel' => 3],
+            6 => ['permissionLevel' => 3],
         ]);
 
         // Encargado de Tienda - edición productos (2), consulta existencias (1), consulta reservas (1)

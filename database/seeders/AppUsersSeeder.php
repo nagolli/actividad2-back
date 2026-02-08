@@ -21,5 +21,6 @@ class AppUsersSeeder extends Seeder
             'phone' => null,
         ]);
 
+        AppUser::factory()->count(30)->create();
     }
 }
