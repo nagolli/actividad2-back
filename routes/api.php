@@ -16,7 +16,7 @@ Route::get('role', [Role::class, 'index']);
 Route::post('role', [Role::class, 'store']);
 Route::get('role/{id}', [Role::class, 'show']);
 Route::patch('role/{id}', [Role::class, 'update']);
-Route::delete('role/{id}', [Role::class, 'destroy']);
+Route::delete('role/{id}/{newId}', [Role::class, 'destroy']);
 
 Route::get('employee', [EmployeeUser::class, 'index']);
 Route::post('employee', [EmployeeUser::class, 'store']);

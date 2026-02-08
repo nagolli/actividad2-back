@@ -37,5 +37,9 @@ class PermissionsSeeder extends Seeder
             'id' => 5,
             'description' => 'Promociones'
         ]);
+        Permission::create([
+            'id' => 6,
+            'description' => 'Gestión de usuarios'
+        ]);
     }
 }
