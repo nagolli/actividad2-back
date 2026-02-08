@@ -19,6 +19,7 @@ class RoleListResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name ?? null,
             'permissions' => $this->permission->map(fn($p) => [
+                'id' => $p->id,
                 'description' => $p->description,
                 'level' => $p->pivot->permissionLevel,
             ])
