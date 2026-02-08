@@ -25,5 +25,7 @@ class ClientUsersSeeder extends Seeder
                 'points' => 0,
             ]);
         }
+               // Vamos a inventarnos clientes
+        ClientUser::factory(5)->create();
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\AppUser;
+use App\Models\ClientUser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -19,5 +20,6 @@ class AppUsersSeeder extends Seeder
             'surname' => '',
             'phone' => null,
         ]);
+
     }
 }

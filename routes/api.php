@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Review;
 use App\Http\Controllers\Api\Role;
 use App\Http\Controllers\Api\EmployeeUser;
 use App\Http\Controllers\Api\ClientUser;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Api\Category;
 use App\Http\Controllers\Api\Supplier;
 use App\Http\Controllers\Api\Product;
+use App\Http\Controllers\Api\Order;
 
 Route::get('role', [Role::class, 'index']);
 Route::post('role', [Role::class, 'store']);
@@ -68,3 +70,19 @@ Route::post('product', [Product::class, 'store']);
 Route::get('product/{id}', [Product::class, 'show']);
 Route::put('product/{id}', [Product::class, 'update']);
 Route::delete('product/{id}', [Product::class, 'destroy']);
+
+//Route::apiResource('orders', Order::class);
+//Route::get('orders/options', [Order::class, 'options']); // si la necesitas
+Route::get('order', [Order::class, 'index']);
+Route::get('order/options', [Order::class, 'options']);
+Route::post('product/filter', [Order::class, 'filter']);
+Route::post('order', [Order::class, 'store']);
+Route::get('order/{id}', [Order::class, 'show']);
+Route::put('order/{id}', [Order::class, 'update']);
+Route::delete('order/{id}', [Order::class, 'destroy']);
+
+Route::get('review', [Review::class, 'index']);
+Route::get('review/{productId}/{email}', [Review::class, 'show']);
+Route::post('review', [Review::class, 'store']);
+Route::put('review/{productId}/{email}', [Review::class, 'update']);
+Route::delete('review/{productId}/{email}', [Review::class, 'destroy']);

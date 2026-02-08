@@ -26,6 +26,11 @@ class Product extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplierId');
     }
+
+    public function orders() {
+        return $this->belongsToMany(Order::class,'esta_en', 'productId','orderId')
+            ->withPivot('quantity','price');
+    }
 }
 
 
