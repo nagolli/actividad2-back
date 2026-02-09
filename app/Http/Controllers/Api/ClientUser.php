@@ -139,6 +139,22 @@ class ClientUser extends Controller
         }
     }
 
+    public static function updatePassword(string $password, string $id): bool
+    {
+        try {
+            $appUser = AppUserModel::findOrFail($id);
+            $client = ClientUserModel::where('appUserId', $appUser->id)->firstOrFail();
+
+            $client->update([
+                'password' => bcrypt($password),
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */

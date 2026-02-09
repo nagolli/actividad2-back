@@ -15,7 +15,7 @@ class Order extends Model
     protected $fillable = [
         'date',
         'state',
-        'email',
+        'userId',
         'addressId',
     ];
 
@@ -24,17 +24,20 @@ class Order extends Model
     const DELETED_AT = 'deletedAt';
 
     // Los belongsTo serian como las claves ajenas
-    public function user() {
-        return $this->belongsTo(AppUser::class, 'email', 'email');
+    public function user()
+    {
+        return $this->belongsTo(AppUser::class, 'id', 'userId');
     }
 
-    public function address() {
+    public function address()
+    {
         return $this->belongsTo(Address::class, 'addressId');
     }
-    
-    public function products() {
-        return $this->belongsToMany(Product::class,'esta_en','orderId', 'productId')
-            ->withPivot('quantity','price')
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'esta_en', 'orderId', 'productId')
+            ->withPivot('quantity', 'price')
             ->withTimestamps();
     }
 }

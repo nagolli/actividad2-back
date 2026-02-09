@@ -16,11 +16,11 @@ class ReviewSeeder extends Seeder
 
         foreach ($users as $user) {
             // cada usuario reseña 3-5 productos distintos
-            $randomProducts = $products->random(rand(3,5));
+            $randomProducts = $products->random(rand(3, 5));
 
             foreach ($randomProducts as $product) {
                 Review::factory()->create([
-                    'email' => $user->email,
+                    'appUser' => $user->id,
                     'productId' => $product->id,
                 ]);
             }

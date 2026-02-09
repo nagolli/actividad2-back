@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('review', function (Blueprint $table) {
             $table->unsignedBigInteger('productId');
-            $table->string('email', 64);
+            $table->unsignedBigInteger('appUser');
 
             $table->text('review');
             $table->integer('rating');
@@ -22,15 +21,15 @@ return new class extends Migration
             $table->timestamp('updatedAt')->useCurrent()->useCurrentOnUpdate();
             $table->timestamp('deletedAt')->nullable();
 
-            $table->primary(['productId', 'email']);
+            $table->primary(['productId', 'appUser']);
 
             $table->foreign('productId')
                 ->references('id')
                 ->on('products')
                 ->onDelete('cascade');
 
-            $table->foreign('email')
-                ->references('email')
+            $table->foreign('appUser')
+                ->references('id')
                 ->on('appUsers')
                 ->onDelete('cascade');
         });

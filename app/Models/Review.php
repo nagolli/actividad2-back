@@ -15,7 +15,7 @@ class Review extends Model
     public $timestamps = false;
     protected $fillable = [
         'productId',
-        'email',
+        'appUser',
         'review',
         'rating',
     ];

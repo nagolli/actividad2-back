@@ -27,4 +27,13 @@ class EmployeeUser extends Model
         return $this->belongsToMany(Role::class, 'employeeUserRoles', 'employeeUserId', 'roleId')
             ->withTimestamps();
     }
+
+    public static function findUserByEmail(string $email): ?EmployeeUser
+    {
+        return self::with('appUser')
+            ->whereHas('appUser', fn($q) => $q->where('email', $email))
+            ->first();
+    }
+
+
 }

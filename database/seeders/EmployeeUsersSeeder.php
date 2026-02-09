@@ -25,6 +25,16 @@ class EmployeeUsersSeeder extends Seeder
             ]);
         }
 
+        $nglUser = AppUser::where('email', 'nacho.gomis@gmail.com')->first();
+
+        if ($adminUser) {
+            EmployeeUser::create([
+                'appUserId' => $nglUser->id,
+                'password' => Hash::make('admin'),
+                'isInactive' => false,
+            ]);
+        }
+
         EmployeeUser::factory()->count(5)->create();
     }
 }
