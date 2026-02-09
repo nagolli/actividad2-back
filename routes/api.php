@@ -53,6 +53,7 @@ Route::get('category', [Category::class, 'index']);
 Route::get('category/options', [Category::class, 'options']);
 Route::post('category', [Category::class, 'store']);
 Route::get('category/{id}', [Category::class, 'show']);
+Route::patch('category/{id}', [Category::class, 'update']);
 Route::put('category/{id}', [Category::class, 'update']);
 Route::delete('category/{id}', [Category::class, 'destroy']);
 
@@ -60,6 +61,7 @@ Route::get('supplier', [Supplier::class, 'index']);
 Route::get('supplier/options', [Supplier::class, 'options']);
 Route::post('supplier', [Supplier::class, 'store']);
 Route::get('supplier/{id}', [Supplier::class, 'show']);
+Route::patch('supplier/{id}', [Supplier::class, 'update']);
 Route::put('supplier/{id}', [Supplier::class, 'update']);
 Route::delete('supplier/{id}', [Supplier::class, 'destroy']);
 
@@ -68,11 +70,10 @@ Route::get('product/price-range', [Product::class, 'priceRange']);
 Route::post('product/filter', [Product::class, 'filter']);
 Route::post('product', [Product::class, 'store']);
 Route::get('product/{id}', [Product::class, 'show']);
+Route::patch('product/{id}', [Product::class, 'update']);
 Route::put('product/{id}', [Product::class, 'update']);
 Route::delete('product/{id}', [Product::class, 'destroy']);
 
-//Route::apiResource('orders', Order::class);
-//Route::get('orders/options', [Order::class, 'options']); // si la necesitas
 Route::get('order', [Order::class, 'index']);
 Route::get('order/options', [Order::class, 'options']);
 Route::post('product/filter', [Order::class, 'filter']);
