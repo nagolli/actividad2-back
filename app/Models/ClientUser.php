@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class ClientUser extends Model
 {
@@ -47,5 +48,14 @@ class ClientUser extends Model
             }
         });
     }
+
+    public static function findUserByEmail(string $email): ?ClientUser
+    {
+        return self::with('appUser')
+            ->whereHas('appUser', fn($q) => $q->where('email', $email))
+            ->first();
+    }
+
+
 }
 

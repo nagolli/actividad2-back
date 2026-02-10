@@ -48,6 +48,8 @@ Route::get('permission', [Permission::class, 'index']);
 Route::get('permission/{id}', [Permission::class, 'show']);
 
 Route::post('login', [Auth::class, 'login']);
+Route::post('forgottenPassword', [Auth::class, 'forgottenPassword']);
+Route::get('resetPassword/{token}', [Auth::class, 'resetPassword']);
 
 Route::get('category', [Category::class, 'index']);
 Route::get('category/options', [Category::class, 'options']);

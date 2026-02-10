@@ -21,6 +21,13 @@ class AppUsersSeeder extends Seeder
             'phone' => null,
         ]);
 
+        AppUser::create([
+            'email' => 'nacho.gomis@gmail.com',
+            'name' => 'nacho',
+            'surname' => 'gomis lli',
+            'phone' => null,
+        ]);
+
         AppUser::factory()->count(30)->create();
     }
 }

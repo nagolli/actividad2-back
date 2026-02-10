@@ -19,10 +19,10 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-                //
+            //
             'date' => now(),
-            'state' => $this->faker->randomElement(['pendiente','enviado']),
-            'email' => AppUser::inRandomOrder()->value('email'),
+            'state' => $this->faker->randomElement(['pendiente', 'enviado']),
+            'userId' => AppUser::inRandomOrder()->value('id'),
             'addressId' => Address::inRandomOrder()->value('id'),
         ];
     }

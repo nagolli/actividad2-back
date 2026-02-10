@@ -5,10 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use \App\Models\AppUser;
+use \App\Models\ClientUser;
+use \App\Models\EmployeeUser;
+use \App\Http\Controllers\Api\ClientUser as ClientUserController;
+use \App\Http\Controllers\Api\EmployeeUser as EmployeeUserController;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use \App\Mail\PasswordResetMail;
+use Illuminate\Support\Facades\Cache;
+
 
 class Auth extends Controller
 {
-
     //Funcion login, a partir de un correo y una contraseña, devuelve un json que contiene:
     // A - El usuario es un cliente: True/False
     // B - Si el usuario es un empleado: Array de pares permiso-nivel
@@ -21,7 +30,7 @@ class Auth extends Controller
             ]);
 
             //Hay que obtener el AppUser con el correo indicado
-            $appUser = \App\Models\AppUser::where('email', $credentials['email'])->first();
+            $appUser = AppUser::where('email', $credentials['email'])->first();
             $isClient = false;
             $isEmployee = false;
 
@@ -65,4 +74,79 @@ class Auth extends Controller
             return response()->json(['error' => 'Login failed'], 500);
         }
     }
+
+    // Mapa estático: token => [email, password, expires_at]
+    private static array $tokenPasswordEmail = [];
+
+    public function forgottenPassword(Request $request)
+    {
+        try {
+            $target = $request->validate([
+                'email' => 'required|email'
+            ]);
+            //0.Verificar que el email esta en uso
+            $c = ClientUser::findUserByEmail($target['email']);
+            $e = EmployeeUser::findUserByEmail($target['email']);
+            if (empty($e) && empty($c)) {
+                //Mismo mensaje que si existiera para no aportar información de no existencia de correos
+                return response()->json(['success' => 'Sended email'], 200);
+            }
+
+            // 1. Generar token aleatorio
+            $token = bin2hex(random_bytes(32));
+
+            // 2. Generar contraseña aleatoria
+            $newPassword = Str::random(12);
+
+            // 3. Guardar en el mapa por 15 minutos
+            Cache::put(
+                "password_reset:$token",
+                [
+                    'email' => $target['email'],
+                    'password' => $newPassword,
+                ],
+                now()->addMinutes(15)
+            );
+
+            // 4. Enviar correo notificando
+            Mail::to($target['email'])->send(new PasswordResetMail($token, $newPassword));
+
+            return response()->json(['success' => 'Sended email'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Forgotten password failed' . $e->getMessage()], 500);
+        }
+    }
+
+    public function resetPassword(string $token)
+    {
+        try {
+            // 1. Verificar que el token exista
+            $data = Cache::get("password_reset:$token");
+            if (!$data) {
+                return response()->json(['error' => 'Token not found'], 400);
+            }
+
+            // 2. Obtener email y contraseña generada
+            $c = ClientUser::findUserByEmail($data['email']);
+            $e = EmployeeUser::findUserByEmail($data['email']);
+            $newPassword = $data['password'];
+
+            // 3. Eliminar del listado
+            Cache::forget("password_reset:$token");
+
+            // 4. Setear la contraseña del usuario
+            if ($c) {
+                ClientUserController::updatePassword($newPassword, $c->id);
+            }
+            if ($e) {
+                EmployeeUserController::updatePassword($newPassword, $e->id);
+            }
+
+            return response()->json(['success' => 'Changed password'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unexpected error' . $e->getMessage()], 500);
+        }
+    }
 }
+

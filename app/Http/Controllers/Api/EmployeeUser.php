@@ -154,6 +154,22 @@ class EmployeeUser extends Controller
         }
     }
 
+    public static function updatePassword(string $password, string $id): bool
+    {
+        try {
+            $appUser = AppUserModel::findOrFail($id);
+            $employee = EmployeeUserModel::where('appUserId', $appUser->id)->firstOrFail();
+
+            $employee->update([
+                'password' => bcrypt($password),
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      */
