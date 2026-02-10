@@ -52,7 +52,7 @@ class Category extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255', Rule::unique('categories', 'name')->whereNull('deleted_at'),],
+                'name' => ['required', 'string', 'max:255', Rule::unique('categories', 'name')->whereNull('deletedAt'),],
             ]);
 
             $category = CategoryModel::create($validated);
@@ -86,7 +86,7 @@ class Category extends Controller
             $category = CategoryModel::findOrFail($id);
 
             $validated = $request->validate([
-                'name' => ['sometimes', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($id)->whereNull('deleted_at'),],
+                'name' => ['sometimes', 'string', 'max:255', Rule::unique('categories', 'name')->ignore($id)->whereNull('deletedAt'),],
             ]);
 
             $category->update($validated);

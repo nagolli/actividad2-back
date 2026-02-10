@@ -52,9 +52,9 @@ class Supplier extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'name')->whereNull('deleted_at'),],
+                'name' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'name')->whereNull('deletedAt'),],
                 'phone' => 'nullable|string|max:32',
-                'email' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'email')->whereNull('deleted_at'),],
+                'email' => ['required', 'string', 'max:255', Rule::unique('suppliers', 'email')->whereNull('deletedAt'),],
                 'inactive' => 'boolean',
             ]);
 
@@ -89,9 +89,9 @@ class Supplier extends Controller
             $supplier = SupplierModel::findOrFail($id);
 
             $validated = $request->validate([
-                'name' => ['sometimes', 'string', 'max:255', Rule::unique('suppliers', 'name')->ignore($id)->whereNull('deleted_at'),],
+                'name' => ['sometimes', 'string', 'max:255', Rule::unique('suppliers', 'name')->ignore($id)->whereNull('deletedAt'),],
                 'phone' => 'sometimes|string|max:32',
-                'email' => ['sometimes', 'string', 'max:255', Rule::unique('suppliers', 'email')->ignore($id)->whereNull('deleted_at'),],
+                'email' => ['sometimes', 'string', 'max:255', Rule::unique('suppliers', 'email')->ignore($id)->whereNull('deletedAt'),],
                 'inactive' => 'boolean',
             ]);
 

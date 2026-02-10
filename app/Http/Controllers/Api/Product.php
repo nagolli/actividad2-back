@@ -87,7 +87,7 @@ class Product extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => ['required', 'string', 'max:255', Rule::unique('products', 'name')->whereNull('deleted_at'),],
+                'name' => ['required', 'string', 'max:255', Rule::unique('products', 'name')->whereNull('deletedAt'),],
                 'price' => 'required|numeric|min:0',
                 'description' => 'nullable|string',
                 'stock' => 'required|integer|min:0',
@@ -128,7 +128,7 @@ class Product extends Controller
             $product = ProductModel::findOrFail($id);
 
             $validated = $request->validate([
-                'name' => ['sometimes', 'string', 'max:255', Rule::unique('products', 'name')->ignore($id)->whereNull('deleted_at'),],
+                'name' => ['sometimes', 'string', 'max:255', Rule::unique('products', 'name')->ignore($id)->whereNull('deletedAt'),],
                 'price' => 'sometimes|numeric|min:0',
                 'description' => 'sometimes|string',
                 'stock' => 'sometimes|integer|min:0',
