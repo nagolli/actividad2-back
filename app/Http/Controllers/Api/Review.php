@@ -25,6 +25,16 @@ class Review extends Controller
         return new ReviewResource($review);
     }
 
+    public function averageRating($productId)
+    {
+        $average = ReviewModel::where('productId', $productId)->avg('rating');
+        $average = $average === null ? null : round($average, 1);
+
+        return response()->json([
+            'averageRating' => $average,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
