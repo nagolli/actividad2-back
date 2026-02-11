@@ -78,7 +78,7 @@ Route::delete('product/{id}', [Product::class, 'destroy']);
 
 Route::get('order', [Order::class, 'index']);
 Route::get('order/options', [Order::class, 'options']);
-Route::post('product/filter', [Order::class, 'filter']);
+Route::post('order/filter', [Order::class, 'filter']);
 Route::post('order', [Order::class, 'store']);
 Route::get('order/{id}', [Order::class, 'show']);
 Route::put('order/{id}', [Order::class, 'update']);
