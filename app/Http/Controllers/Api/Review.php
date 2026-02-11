@@ -30,9 +30,7 @@ class Review extends Controller
         $average = ReviewModel::where('productId', $productId)->avg('rating');
         $average = $average === null ? null : round($average, 1);
 
-        return response()->json([
-            'averageRating' => $average,
-        ]);
+        return response()->json($average);
     }
 
     public function store(Request $request)
