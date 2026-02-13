@@ -18,7 +18,10 @@ class EmployeeUserResource extends JsonResource
             'id' => $this->appUser->id,
             'email' => $this->appUser->email,
             'name' => $this->appUser->name,
-            'addresses' => $this->appUser->addresses->map(fn ($a) => [
+            'surname' => $this->appUser->surname,
+            'addresses' => $this->appUser->addresses->map(fn($a) => [
+                'name' => $a->pivot->name,
+                'id' => $a->id,
                 'city' => $a->city,
                 'street' => $a->street,
                 'number' => $a->number,
@@ -31,9 +34,10 @@ class EmployeeUserResource extends JsonResource
             ]),
             'phone' => $this->appUser->phone,
             'isInactive' => $this->isInactive,
-            'roles' => $this->role->map(fn ($r) => [
+            'roles' => $this->role->map(fn($r) => [
+                'id' => $r->id,
                 'name' => $r->name,
-                'permissions' => $r->permission->map(fn ($p) => [
+                'permissions' => $r->permission->map(fn($p) => [
                     'description' => $p->description,
                     'level' => $p->pivot->permissionLevel,
                 ])

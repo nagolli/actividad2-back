@@ -18,7 +18,10 @@ class ClientUserResource extends JsonResource
             'id' => $this->appUser->id,
             'email' => $this->appUser->email,
             'name' => $this->appUser->name,
+            'surname' => $this->appUser->surname,
             'addresses' => $this->appUser->addresses->map(fn($a) => [
+                'name' => $a->pivot->name,
+                'id' => $a->id,
                 'city' => $a->city,
                 'street' => $a->street,
                 'number' => $a->number,
