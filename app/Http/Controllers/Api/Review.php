@@ -15,6 +15,14 @@ class Review extends Controller
         return ReviewResource::collection($reviews);
     }
 
+    public function indexByProduct($productId)
+    {
+    $reviews = ReviewModel::with('user')
+        ->where('productId', $productId)
+        ->get();
+
+    return ReviewResource::collection($reviews);
+    }
     public function show($productId, $email)
     {
         $review = ReviewModel::with('user', 'product')

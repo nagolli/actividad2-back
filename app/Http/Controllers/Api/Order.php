@@ -6,6 +6,8 @@ use App\Http\Resources\OrderResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Order as OrderModel;
+use App\Models\AppUser as AppUserModel;
+
 class Order extends Controller
 {
 
@@ -79,23 +81,28 @@ class Order extends Controller
     {
          try {
             $validated = $request->validate([
-                'email' => 'required|exists:users,email',
+                'email' => 'required|exists:appUsers,email',
                 'addressId' => 'required|exists:addresses,id',
 
                 'products' => 'required|array|min:1',
                 'products.*.id' => 'required|exists:products,id',
                 'products.*.quantity' => 'required|integer|min:1',
             ]);
-
+            
+            $user = AppUserModel::where('email', $validated['email'])->first();
+            
             $order = OrderModel::create([
                 'date' => now(),
-                'state' => 'pendiente',
-                'email' => $validated['email'],
-                'addressId' => $validated['addressId'],
+                'state' => 'pendiente',                
+                'userId' => $user->id,
+                'addressId' => $validated['addressId'],                
             ]);
             foreach ($validated['products'] as $item) {
                 $product = Product::find($item['id']);
-
+                if (!$product) {
+                   \Log::error("Producto no encontrado: " . $item['id']);
+                    throw new \Exception("Producto no encontrado: " . $item['id']);
+                }
                 $order->products()->attach($product->id, [
                     'quantity' => $item['quantity'],
                     'price' => $product->price
@@ -108,7 +115,9 @@ class Order extends Controller
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
+        } catch (\Exception $e) {            
+            \Log::error('Error creando pedido: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
             return response()->json(['error' => 'Error creating product'], 500);
         }
     }

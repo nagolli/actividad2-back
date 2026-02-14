@@ -26,7 +26,7 @@ class Order extends Model
     // Los belongsTo serian como las claves ajenas
     public function user()
     {
-        return $this->belongsTo(AppUser::class, 'id', 'userId');
+        return $this->belongsTo(AppUser::class, 'userId', 'id');
     }
 
     public function address()

@@ -86,6 +86,7 @@ Route::delete('order/{id}', [Order::class, 'destroy']);
 
 Route::get('review', [Review::class, 'index']);
 Route::get('review/{productId}/average-rating', [Review::class, 'averageRating']);
+Route::get('review/product/{productId}', [Review::class, 'indexByProduct']);
 Route::get('review/{productId}/{email}', [Review::class, 'show']);
 Route::post('review', [Review::class, 'store']);
 Route::put('review/{productId}/{email}', [Review::class, 'update']);
