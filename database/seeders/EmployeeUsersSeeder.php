@@ -7,6 +7,7 @@ use App\Models\EmployeeUser;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Nette\Utils\Random;
 
 class EmployeeUsersSeeder extends Seeder
 {
@@ -35,6 +36,6 @@ class EmployeeUsersSeeder extends Seeder
             ]);
         }
 
-        EmployeeUser::factory()->count(5)->create();
+        EmployeeUser::factory()->count(5)->withRandomRoles(2)->create();
     }
 }

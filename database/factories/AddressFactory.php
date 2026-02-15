@@ -17,7 +17,7 @@ class AddressFactory extends Factory
     public function definition(): array
     {
         return [
-            'postalCode' => $this->faker->postcode(),
+            'postalCode' => $this->faker->numberBetween(10000, 99999),
             'floor' => $this->faker->optional()->numberBetween(0, 10),
             'door' => $this->faker->optional()->numberBetween(1, 5),
             'staircase' => $this->faker->optional()->numberBetween(1, 5),

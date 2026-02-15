@@ -17,17 +17,17 @@ class AppUsersSeeder extends Seeder
         AppUser::create([
             'email' => 'admin@example.com',
             'name' => 'admin',
-            'surname' => '',
-            'phone' => null,
+            'surname' => 'admin',
+            'phone' => 666999333,
         ]);
 
         AppUser::create([
             'email' => 'nacho.gomis@gmail.com',
             'name' => 'nacho',
             'surname' => 'gomis lli',
-            'phone' => null,
+            'phone' => 666999333,
         ]);
 
-        AppUser::factory()->count(30)->create();
+        AppUser::factory()->count(30)->withAddresses()->create();
     }
 }

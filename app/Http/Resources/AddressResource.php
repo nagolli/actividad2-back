@@ -21,7 +21,6 @@ class AddressResource extends JsonResource
             'postalCode' => $this->postalCode ?? null,
             'province' => $this->province ?? null,
             'country' => $this->country ?? null,
-            'phone' => $this->phone ?? null,
             'number' => $this->number ?? null,
             'floor' => $this->floor ?? null,
             'door' => $this->door ?? null,
