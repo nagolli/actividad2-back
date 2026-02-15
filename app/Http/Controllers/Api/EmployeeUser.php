@@ -22,7 +22,7 @@ class EmployeeUser extends Controller
         try {
             $perPage = $request->input('per_page', default: 100);
             $page = $request->input('page', 1);
-            $employees = EmployeeUserModel::with('appUser')->paginate($perPage, ['*'], 'page', $page);
+            $employees = EmployeeUserModel::with(relations: ['appUser', 'role'])->paginate($perPage, ['*'], 'page', $page);
             return EmployeeUserListResource::collection($employees);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error fetching employees'], 500);

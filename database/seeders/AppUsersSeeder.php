@@ -28,6 +28,6 @@ class AppUsersSeeder extends Seeder
             'phone' => 666999333,
         ]);
 
-        AppUser::factory()->count(30)->create();
+        AppUser::factory()->count(30)->withAddresses()->create();
     }
 }

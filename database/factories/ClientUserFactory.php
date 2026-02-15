@@ -19,7 +19,7 @@ class ClientUserFactory extends Factory
     public function definition(): array
     {
         return [
-            'appUserId' => AppUser::factory(),
+            'appUserId' => AppUser::factory()->withAddresses()->create()->id,
             'password' => Hash::make('cliente'),
             'level' => $this->faker->numberBetween(0, 3),
             'points' => $this->faker->numberBetween(0, 1000),

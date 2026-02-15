@@ -19,7 +19,12 @@ class EmployeeUserListResource extends JsonResource
             'email' => $this->appUser->email,
             'name' => $this->appUser->name,
             'phone' => $this->appUser->phone,
+            'surname' => $this->appUser->surname,
             'isInactive' => $this->isInactive,
+            'roles' => $this->role->map(fn($r) => [
+                'id' => $r->id,
+                'description' => $r->name,
+            ]),
         ];
     }
 }
