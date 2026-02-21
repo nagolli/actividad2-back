@@ -83,7 +83,7 @@ class EmployeeUser extends Controller
     public function show(string $id)
     {
         try {
-            $employee = EmployeeUserModel::with('appUser.addresses', 'role.permission')->findOrFail($id);
+            $employee = EmployeeUserModel::with('appUser.addresses', 'role.permission')->where('appUserId', $id)->firstOrFail();
             return new EmployeeUserResource($employee); // usar recurso simple
         } catch (\Exception $e) {
             return response()->json(['error' => 'Employee not found'], 404);

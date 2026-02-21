@@ -74,7 +74,7 @@ class ClientUser extends Controller
     public function show(string $id)
     {
         try {
-            $client = ClientUserModel::with('appUser.addresses')->findOrFail($id);
+            $client = ClientUserModel::with('appUser.addresses')->where('appUserId', $id)->firstOrFail();
             return new ClientUserResource($client);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Client not found'], 404);
