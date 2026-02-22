@@ -104,7 +104,7 @@ class EmployeeUser extends Controller
                 'name' => 'sometimes|string|max:64',
                 'surname' => 'sometimes|string|max:128',
                 'phone' => 'sometimes|string|max:32',
-                'password' => 'sometimes|string|min:8',
+                'password' => 'sometimes|string|min:5',
                 'isInactive' => 'sometimes|boolean',
                 'addresses' => 'sometimes|array',
                 'addresses.*.addressId' => 'required|exists:addresses,id',

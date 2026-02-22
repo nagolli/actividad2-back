@@ -39,7 +39,7 @@ class ClientUser extends Controller
                 'name' => 'required|string|max:64',
                 'surname' => 'required|string|max:128',
                 'phone' => 'required|string|max:32',
-                'password' => 'required|string|min:8',
+                'password' => 'required|string|min:5',
                 'addresses' => 'nullable|array',
                 'addresses.*.addressId' => 'required|exists:addresses,id',
                 'addresses.*.name' => 'required|string|max:128'
