@@ -70,6 +70,7 @@ Route::delete('supplier/{id}', [Supplier::class, 'destroy']);
 Route::get('product', [Product::class, 'index']);
 Route::get('product/price-range', [Product::class, 'priceRange']);
 Route::post('product/filter', [Product::class, 'filter']);
+Route::post('product/search', [Product::class, 'search']);
 Route::post('product', [Product::class, 'store']);
 Route::get('product/{id}', [Product::class, 'show']);
 Route::patch('product/{id}', [Product::class, 'update']);

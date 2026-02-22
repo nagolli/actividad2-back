@@ -68,6 +68,36 @@ class Product extends Controller
     }
 
     /**
+     * Filter products by product, category, or supplier name.
+     */
+    public function search(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'query' => 'required|string',
+            ]);
+
+            $term = $validated['query'];
+
+            $products = ProductModel::query()
+                ->where('name', 'like', '%' . $term . '%')
+                ->orWhereHas('category', function ($query) use ($term) {
+                    $query->where('name', 'like', '%' . $term . '%');
+                })
+                ->orWhereHas('supplier', function ($query) use ($term) {
+                    $query->where('name', 'like', '%' . $term . '%');
+                })
+                ->get();
+
+            return response()->json($products);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error searching products'], 500);
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
