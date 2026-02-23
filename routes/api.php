@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Category;
 use App\Http\Controllers\Api\Supplier;
 use App\Http\Controllers\Api\Product;
 use App\Http\Controllers\Api\Order;
+use App\Http\Controllers\Api\FastOrder;
 
 Route::get('role', [Role::class, 'index']);
 Route::post('role', [Role::class, 'store']);
@@ -77,6 +78,7 @@ Route::patch('product/{id}', [Product::class, 'update']);
 Route::put('product/{id}', [Product::class, 'update']);
 Route::delete('product/{id}', [Product::class, 'destroy']);
 
+Route::get('/orders/{userId}', [Order::class, 'byUser']);
 Route::get('order', [Order::class, 'index']);
 Route::get('order/options', [Order::class, 'options']);
 Route::post('order/filter', [Order::class, 'filter']);
@@ -84,6 +86,8 @@ Route::post('order', [Order::class, 'store']);
 Route::get('order/{id}', [Order::class, 'show']);
 Route::put('order/{id}', [Order::class, 'update']);
 Route::delete('order/{id}', [Order::class, 'destroy']);
+
+Route::post('/fastorder', [FastOrder::class, 'store']);
 
 Route::get('review', [Review::class, 'index']);
 Route::get('review/{productId}/average-rating', [Review::class, 'averageRating']);
