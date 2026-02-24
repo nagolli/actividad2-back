@@ -30,7 +30,7 @@ class Review extends Model
 
     public function user()
     {
-        return $this->belongsTo(AppUser::class, 'email', 'email');
+        return $this->belongsTo(AppUser::class, 'appUser', 'id');
     }
 
 }
