@@ -196,6 +196,35 @@ class Order extends Controller
         }
     }
 
+    public function complete(string $id)
+    {
+        try {
+            // Buscar pedido
+            $order = OrderModel::findOrFail($id);
+
+            // Validar si ya está completado
+            if ($order->state === 'completado') {
+                return response()->json([
+                    'message' => 'order already completed'
+                ], 400);
+            }
+
+            // Actualizar estado a completado
+            $order->state = 'completado';
+            $order->save();
+            
+            return response()->json([
+                'message' => 'order completed successfully',
+                'orderId' => $order->id,
+                'state' => $order->state
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'error marking order as completed'
+            ], 500);
+        }
+    }
     /**
      * Eliminar pedido
      */

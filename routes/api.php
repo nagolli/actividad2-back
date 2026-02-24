@@ -85,6 +85,7 @@ Route::post('order/filter', [Order::class, 'filter']);
 Route::post('order', [Order::class, 'store']);
 Route::get('order/{id}', [Order::class, 'show']);
 Route::put('order/{id}', [Order::class, 'update']);
+Route::patch('order/{id}', [Order::class, 'complete']);
 Route::delete('order/{id}', [Order::class, 'destroy']);
 
 Route::post('/fastorder', [FastOrder::class, 'store']);
