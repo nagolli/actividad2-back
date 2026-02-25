@@ -14,14 +14,11 @@ use Illuminate\Support\Facades\Log;
 
 class FastOrder extends Controller
 {
-    /**
-     * Store a newly created fast order (guest checkout).
-     */
     public function store(Request $request)
     {
         try {
 
-            // Validación de datos planos
+            // 
             $validated = $request->validate([
                 // Usuario
                 'email' => 'required|email|max:64',
@@ -30,12 +27,12 @@ class FastOrder extends Controller
                 'phone' => 'nullable|string|max:32',
 
                 // Dirección
-                'street' => 'required|string|max:255',
+                'street' => 'required|string|max:128',
                 'number' => 'nullable|string|max:10',
-                'city' => 'required|string|max:100',
-                'province' => 'required|string|max:20',
-                'postalCode' => 'required|string|max:20',
-                'country' => 'required|string|max:100',
+                'city' => 'required|string|max:64',
+                'province' => 'required|string|max:64',
+                'postalCode' => 'required|string|max:8',
+                'country' => 'required|string|max:64',
                 'floor' => 'nullable|string|max:10',
 
                 // Productos
